@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserAccountController;
+
+Route::post('/user-account', [UserAccountController::class, 'store']);
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,6 +24,12 @@ Route::get('/register', function () {
 
 Route::get('/admin', function () {
     return view('admin.dashboard');
+});
+
+//Admin Routes
+
+Route::get('/admin/user', function () {
+    return view('admin.user');
 });
 
 Route::get('/admin/activity-logs', function () {

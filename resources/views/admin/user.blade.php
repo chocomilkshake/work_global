@@ -2,8 +2,8 @@
 
 @section('content')
 
-<div id="app">
-    <user-dashboard></user-dashboard>
+<div id="user">
+    <user-list></user-list>
 </div>
 
 

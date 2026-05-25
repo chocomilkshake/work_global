@@ -1,32 +1,10 @@
 <template>
 <div class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <h4 class="logo">User Panel</h4>
-
-        <a href="#" @click.prevent="section='dashboard'">Dashboard</a>
-        <a href="#" @click.prevent="section='profile'">Profile</a>
-        <a href="#" @click.prevent="section='jobs'">Jobs</a>
-        <a href="#" @click.prevent="section='applications'">Applications</a>
-
-        <hr>
-
-        <form method="POST" action="/logout">
-            <input type="hidden" name="_token" :value="csrf">
-            <button class="logout-btn">Logout</button>
-        </form>
-    </aside>
 
     <!-- MAIN -->
     <main class="main">
-
-        <!-- TOP BAR -->
-        <div class="topbar">
-            <h3>{{ title }}</h3>
-            <span>Welcome, {{ user.name }}</span>
-        </div>
-
+        
         <!-- DASHBOARD -->
         <section v-if="section === 'dashboard'" class="card-box">
             <h4>Dashboard Overview</h4>
@@ -104,7 +82,8 @@ export default {
         return {
             section: 'dashboard',
 
-            csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            // SAFE fallback (prevents crash)
+            csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
 
             user: {
                 name: 'John Doe',
@@ -154,7 +133,6 @@ export default {
     font-family: sans-serif;
 }
 
-/* Sidebar */
 .sidebar {
     width: 240px;
     background: #111827;
@@ -183,7 +161,6 @@ export default {
     cursor: pointer;
 }
 
-/* Main */
 .main {
     flex: 1;
     padding: 20px;
@@ -199,7 +176,6 @@ export default {
     justify-content: space-between;
 }
 
-/* Cards */
 .card-box {
     background: white;
     padding: 20px;
@@ -219,7 +195,6 @@ export default {
     text-align: center;
 }
 
-/* Jobs */
 .job {
     display: flex;
     justify-content: space-between;
@@ -237,7 +212,6 @@ export default {
     cursor: pointer;
 }
 
-/* Badge */
 .badge {
     padding: 5px 10px;
     border-radius: 8px;

@@ -1,10 +1,10 @@
 import './bootstrap'
-
 import { createApp } from 'vue'
 import UserDashboard from './components/UserDashboard.vue'
 
-const app = createApp({})
+createApp(UserDashboard).mount('#app')
 
-app.component('user-dashboard', UserDashboard)
 
-app.mount('#app')
+import UserList from './components/UserList.vue'
+
+createApp(UserList).mount('#user')
