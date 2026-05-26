@@ -3,20 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserAccount extends Model
 {
-    protected $table = 'user_account';
+    use SoftDeletes;
 
-    public $timestamps = false;
+    protected $table = 'user_account';
 
     protected $fillable = [
         'username',
         'name',
         'email',
         'password',
-        'role',
-        'created_date',
+        'role'
+    ];
+
+    protected $hidden = [
+        'password'
+    ];
+
+    protected $dates = [
         'deleted_at'
     ];
 }

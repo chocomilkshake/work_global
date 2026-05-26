@@ -1,7 +1,7 @@
 <template>
   <div class="container py-4">
 
-    <!-- ================= DASHBOARD STATS ================= -->
+    <!-- ================= STATS ================= -->
     <div class="row mb-4">
 
       <div class="col-md-4">
@@ -32,20 +32,30 @@
 
       <h4>User Management</h4>
 
-      <div>
-        <button class="btn btn-success me-2" @click="openAddModal">
+      <div class="d-flex">
+
+        <!-- ADD USER -->
+        <button class="btn btn-success me-2" @click="showAddModal = true">
           + Add User
         </button>
 
-        <button class="btn btn-primary me-2" @click="showTrash = false">
-          Active
-        </button>
+        <!-- DESKTOP -->
+        <div class="d-none d-md-flex">
+          <button class="btn btn-primary me-2" @click="setActive">Active</button>
+          <button class="btn btn-warning" @click="setTrash">Trash</button>
+        </div>
 
-        <button class="btn btn-warning" @click="showTrash = true">
-          Trash
-        </button>
+        <!-- MOBILE -->
+        <div class="d-md-none position-relative ms-2">
+          <button class="btn btn-dark" @click="toggleMenu = !toggleMenu">☰</button>
+
+          <div v-if="toggleMenu" class="mobile-menu shadow">
+            <button class="dropdown-item" @click="setActive">Active</button>
+            <button class="dropdown-item" @click="setTrash">Trash</button>
+          </div>
+        </div>
+
       </div>
-
     </div>
 
     <!-- ================= TABLE ================= -->
@@ -61,13 +71,13 @@
             <th>Email</th>
             <th>Role</th>
             <th>Status</th>
-            <th width="220">Action</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
 
-          <tr v-for="(user, index) in filteredUsers" :key="user.id">
+          <tr v-for="(user, index) in users" :key="user.id">
 
             <td>{{ index + 1 }}</td>
             <td>{{ user.name }}</td>
@@ -87,24 +97,22 @@
             <td>
 
               <div v-if="!showTrash">
+
                 <button class="btn btn-sm btn-info me-1" @click="viewUser(user)">View</button>
                 <button class="btn btn-sm btn-success me-1" @click="editUser(user)">Edit</button>
                 <button class="btn btn-sm btn-danger" @click="deleteUser(user)">Delete</button>
+
               </div>
 
               <div v-else>
+
                 <button class="btn btn-sm btn-primary me-1" @click="restoreUser(user)">Restore</button>
                 <button class="btn btn-sm btn-danger" @click="forceDelete(user)">Delete</button>
+
               </div>
 
             </td>
 
-          </tr>
-
-          <tr v-if="filteredUsers.length === 0">
-            <td colspan="7" class="text-center py-4">
-              No users found
-            </td>
           </tr>
 
         </tbody>
@@ -114,108 +122,78 @@
     </div>
 
     <!-- ================= ADD USER MODAL ================= -->
-    <transition name="slide-up">
+    <div v-if="showAddModal" class="modal-backdrop-custom">
 
-      <div v-if="showAddModal" class="modal-backdrop-custom">
+      <div class="modal-card">
 
-        <div class="modal-card">
+        <h5 class="mb-3">Add User Account</h5>
 
-          <h5 class="mb-3">Add User Account</h5>
+        <!-- NAME -->
+        <input v-model="form.name" class="form-control mb-2" placeholder="Name">
 
-          <!-- NAME -->
-          <div class="mb-2">
-            <label>Name</label>
-            <input v-model="form.name" class="form-control" />
+        <!-- USERNAME -->
+        <input v-model="form.username" class="form-control mb-2" placeholder="Username">
+
+        <!-- EMAIL -->
+        <input v-model="form.email" class="form-control mb-2" placeholder="Email">
+
+        <!-- PASSWORD -->
+        <input type="password" v-model="form.password" class="form-control mb-2" placeholder="Password">
+
+        <!-- PASSWORD STRENGTH -->
+        <div class="progress mb-1" style="height:6px;">
+          <div class="progress-bar"
+               :class="{
+                 'bg-danger': passwordStrength === 'Weak',
+                 'bg-warning': passwordStrength === 'Medium',
+                 'bg-success': passwordStrength === 'Strong'
+               }"
+               :style="{
+                 width: passwordStrength === 'Weak' ? '33%' :
+                        passwordStrength === 'Medium' ? '66%' : '100%'
+               }">
           </div>
+        </div>
 
-          <!-- USERNAME -->
-          <div class="mb-2">
-            <label>Username</label>
-            <input v-model="form.username" class="form-control" />
-          </div>
+        <small class="mb-2 d-block">
+          Strength: {{ passwordStrength }}
+        </small>
 
-          <!-- EMAIL -->
-          <div class="mb-2">
-            <label>Email</label>
-            <input v-model="form.email" class="form-control" />
-          </div>
+        <!-- CONFIRM PASSWORD -->
+        <input type="password"
+               v-model="form.confirm_password"
+               class="form-control mb-2"
+               placeholder="Confirm Password">
 
-          <!-- PASSWORD -->
-          <div class="mb-2">
-            <label>Password</label>
-            <input type="password" v-model="form.password" class="form-control" />
+        <small v-if="form.confirm_password && form.password !== form.confirm_password"
+               class="text-danger">
+          Password does not match
+        </small>
 
-            <div class="progress mt-2" style="height: 6px;">
-              <div
-                class="progress-bar"
-                :class="{
-                  'bg-danger': passwordStrength === 'Weak',
-                  'bg-warning': passwordStrength === 'Medium',
-                  'bg-success': passwordStrength === 'Strong'
-                }"
-                :style="{
-                  width:
-                    passwordStrength === 'Weak'
-                      ? '33%'
-                      : passwordStrength === 'Medium'
-                      ? '66%'
-                      : '100%'
-                }"
-              ></div>
-            </div>
+        <!-- ROLE -->
+        <select v-model="form.role" class="form-control mb-3">
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
 
-            <small
-              :class="{
-                'text-danger': passwordStrength === 'Weak',
-                'text-warning': passwordStrength === 'Medium',
-                'text-success': passwordStrength === 'Strong'
-              }"
-            >
-              Strength: {{ passwordStrength }}
-            </small>
-          </div>
+        <!-- BUTTONS -->
+        <div class="d-flex justify-content-end">
 
-          <!-- CONFIRM PASSWORD -->
-          <div class="mb-2">
-            <label>Confirm Password</label>
-            <input type="password" v-model="form.confirm_password" class="form-control" />
+          <button class="btn btn-secondary me-2" @click="closeModal">
+            Cancel
+          </button>
 
-            <small v-if="form.confirm_password && form.password !== form.confirm_password" class="text-danger">
-              Password does not match
-            </small>
-          </div>
-
-          <!-- ROLE -->
-          <div class="mb-2">
-            <label>Role</label>
-            <select v-model="form.role" class="form-control">
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
-          <!-- BUTTONS -->
-          <div class="d-flex justify-content-end mt-3">
-
-            <button class="btn btn-secondary me-2" @click="closeModal">
-              Cancel
-            </button>
-
-            <button
-              class="btn btn-success"
-              :disabled="!isFormValid"
-              @click="addUser"
-            >
-              Save
-            </button>
-
-          </div>
+          <button class="btn btn-success"
+                  :disabled="!isFormValid"
+                  @click="addUser">
+            Save
+          </button>
 
         </div>
 
       </div>
 
-    </transition>
+    </div>
 
   </div>
 </template>
@@ -226,8 +204,9 @@ import axios from "axios";
 export default {
   data() {
     return {
-
+      users: [],
       showTrash: false,
+      toggleMenu: false,
       showAddModal: false,
 
       form: {
@@ -237,34 +216,24 @@ export default {
         password: "",
         confirm_password: "",
         role: "user"
-      },
-
-      users: [
-        { id: 1, name: "System Admin", username: "admin01", email: "admin@mail.com", role: "admin", deleted_at: null },
-        { id: 2, name: "John Doe", username: "john_doe", email: "john@mail.com", role: "user", deleted_at: null },
-        { id: 3, name: "Jane Smith", username: "jane_smith", email: "jane@mail.com", role: "user", deleted_at: "2026-01-01" }
-      ]
+      }
     };
   },
 
   mounted() {
-    window.addEventListener("keydown", this.handleEsc);
+    this.fetchUsers();
   },
 
-  beforeUnmount() {
-    window.removeEventListener("keydown", this.handleEsc);
+  watch: {
+    showTrash() {
+      this.fetchUsers();
+    }
   },
 
   computed: {
 
-    filteredUsers() {
-      return this.users.filter(u =>
-        this.showTrash ? u.deleted_at : !u.deleted_at
-      );
-    },
-
     adminCount() {
-      return this.users.filter(u => u.role === "admin" && !u.deleted_at).length;
+      return this.users.filter(u => u.role === 'admin' && !u.deleted_at).length;
     },
 
     trashedUsers() {
@@ -282,7 +251,7 @@ export default {
       if (/[^A-Za-z0-9]/.test(p)) score++;
 
       if (score <= 2) return "Weak";
-      if (score === 3 || score === 4) return "Medium";
+      if (score <= 4) return "Medium";
       return "Strong";
     },
 
@@ -297,12 +266,36 @@ export default {
         this.passwordStrength !== "Weak"
       );
     }
+
   },
 
   methods: {
 
-    openAddModal() {
-      this.showAddModal = true;
+    async fetchUsers() {
+      const url = this.showTrash
+        ? '/user-account/trash'
+        : '/user-account';
+
+      const res = await axios.get(url);
+      this.users = res.data;
+      this.toggleMenu = false;
+    },
+
+    setActive() {
+      this.showTrash = false;
+    },
+
+    setTrash() {
+      this.showTrash = true;
+    },
+
+    async addUser() {
+      await axios.post('/user-account', this.form);
+
+      alert("User created successfully");
+
+      this.closeModal();
+      this.fetchUsers();
     },
 
     closeModal() {
@@ -318,69 +311,38 @@ export default {
       };
     },
 
-    handleEsc(event) {
-      if (event.key === "Escape" && this.showAddModal) {
-        this.closeModal();
-      }
+    async deleteUser(user) {
+      if (!confirm("Move to trash?")) return;
+      await axios.delete(`/user-account/${user.id}`);
+      this.fetchUsers();
     },
 
-    async addUser() {
-
-      if (!this.isFormValid) return;
-
-      try {
-
-        await axios.post('/user-account', {
-          username: this.form.username,
-          name: this.form.name,
-          email: this.form.email,
-          password: this.form.password,
-          role: this.form.role
-        });
-
-        this.users.push({
-          id: Date.now(),
-          name: this.form.name,
-          username: this.form.username,
-          email: this.form.email,
-          role: this.form.role,
-          deleted_at: null
-        });
-
-        alert("User created successfully");
-
-        this.closeModal();
-
-      } catch (error) {
-        console.log(error);
-        alert("Failed to create user");
-      }
+    async restoreUser(user) {
+      if (!confirm("Restore user?")) return;
+      await axios.post(`/user-account/${user.id}/restore`);
+      this.fetchUsers();
     },
 
-    viewUser(user) {
-      alert(`View: ${user.name}`);
+    async forceDelete(user) {
+      if (!confirm("Permanently delete?")) return;
+      await axios.delete(`/user-account/${user.id}/force`);
+      this.fetchUsers();
     },
 
     editUser(user) {
-      alert(`Edit: ${user.name}`);
+      alert("Edit: " + user.name);
     },
 
-    deleteUser(user) {
-      user.deleted_at = new Date().toISOString();
-    },
-
-    restoreUser(user) {
-      user.deleted_at = null;
-    },
-
-    forceDelete(user) {
-      this.users = this.users.filter(u => u.id !== user.id);
+    viewUser(user) {
+      alert("View: " + user.name);
     }
+
   }
 };
 </script>
 
 <style scoped>
+.card { border-radius: 10px; }
 
 .modal-backdrop-custom {
   position: fixed;
@@ -392,34 +354,28 @@ export default {
 }
 
 .modal-card {
-  background: #fff;
+  background: white;
   padding: 20px;
   width: 420px;
   border-radius: 10px;
 }
 
-/* animation */
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateY(80px);
+.mobile-menu {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: white;
+  width: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 999;
 }
 
-.slide-up-enter-active {
-  transition: all 0.25s ease-out;
+.mobile-menu .dropdown-item {
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: white;
 }
-
-.slide-up-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.slide-up-leave-active {
-  transition: all 0.2s ease-in;
-}
-
-.slide-up-leave-to {
-  opacity: 0;
-  transform: translateY(80px);
-}
-
 </style>
