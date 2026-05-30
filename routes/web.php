@@ -47,6 +47,10 @@ Route::get('/admin/user', function () {
     return view('admin.user');
 });
 
+Route::get('/admin/employer', function () {
+    return view('admin.employer');
+});
+
 Route::get('/admin/activity-logs', function () {
     return view('admin.activity-logs');
 });

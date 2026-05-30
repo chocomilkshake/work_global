@@ -8,3 +8,7 @@ createApp(UserDashboard).mount('#app')
 import UserList from './components/UserList.vue'
 
 createApp(UserList).mount('#user')
+
+import EmployerList from './components/EmployerList.vue'
+
+createApp(EmployerList).mount('#employer')

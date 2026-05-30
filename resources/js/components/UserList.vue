@@ -77,9 +77,9 @@
 
         <tbody>
 
-          <tr v-for="(user, index) in users" :key="user.id">
+          <tr v-for="(user, index) in paginatedUsers" :key="user.id">
 
-            <td>{{ index + 1 }}</td>
+            <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
@@ -119,6 +119,36 @@
 
       </table>
 
+    </div>
+
+    <!-- ================= PAGINATION ================= -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div>
+        <small class="text-muted">
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, users.length) }} of {{ users.length }} users
+        </small>
+      </div>
+      <nav aria-label="Page navigation">
+        <ul class="pagination mb-0">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="currentPage = 1" :disabled="currentPage === 1">First</button>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="currentPage--" :disabled="currentPage === 1">Previous</button>
+          </li>
+
+          <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+            <button class="page-link" @click="currentPage = page">{{ page }}</button>
+          </li>
+
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button class="page-link" @click="currentPage++" :disabled="currentPage === totalPages">Next</button>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button class="page-link" @click="currentPage = totalPages" :disabled="currentPage === totalPages">Last</button>
+          </li>
+        </ul>
+      </nav>
     </div>
 
     <!-- ================= ADD USER MODAL ================= -->
@@ -208,6 +238,8 @@ export default {
       showTrash: false,
       toggleMenu: false,
       showAddModal: false,
+      currentPage: 1,
+      itemsPerPage: 10,
 
       form: {
         name: "",
@@ -238,6 +270,16 @@ export default {
 
     trashedUsers() {
       return this.users.filter(u => u.deleted_at);
+    },
+
+    paginatedUsers() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.users.slice(start, end);
+    },
+
+    totalPages() {
+      return Math.ceil(this.users.length / this.itemsPerPage);
     },
 
     passwordStrength() {
@@ -278,15 +320,18 @@ export default {
 
       const res = await axios.get(url);
       this.users = res.data;
+      this.currentPage = 1;
       this.toggleMenu = false;
     },
 
     setActive() {
       this.showTrash = false;
+      this.currentPage = 1;
     },
 
     setTrash() {
       this.showTrash = true;
+      this.currentPage = 1;
     },
 
     async addUser() {

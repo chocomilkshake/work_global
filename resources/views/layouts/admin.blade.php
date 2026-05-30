@@ -47,6 +47,13 @@
                 </li>
 
                 <li>
+                    <a href="{{ url('/admin/employer') }}">
+                        <i class="fa-solid fa-building"></i>
+                        Employers
+                    </a>
+                </li>
+
+                <li></li>
                     <a href="#">
                         <i class="fa-solid fa-briefcase"></i>
                         Jobs
@@ -54,7 +61,7 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="{{ url('/admin/employer') }}">
                         <i class="fa-solid fa-building"></i>
                         Employers
                     </a>
