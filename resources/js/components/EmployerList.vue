@@ -1,20 +1,19 @@
 <template>
   <div class="container py-4">
 
-    <!-- ================= STATS ================= -->
     <div class="row mb-4">
 
       <div class="col-md-4">
         <div class="card shadow-sm p-3">
-          <h6>Total Applicants</h6>
-          <h3>{{ applicants.length }}</h3>
+          <h6>Total Employers</h6>
+          <h3>{{ employers.length }}</h3>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="card shadow-sm p-3">
-          <h6>Accepted</h6>
-          <h3>{{ acceptedCount }}</h3>
+          <h6>Approved</h6>
+          <h3>{{ approvedCount }}</h3>
         </div>
       </div>
 
@@ -27,137 +26,184 @@
 
     </div>
 
-    <!-- ================= HEADER ================= -->
     <div class="d-flex justify-content-between align-items-center mb-3">
 
       <h4>Employer Approval</h4>
 
-      <div class="d-flex">
-
-        <!-- DESKTOP -->
-        <div class="d-none d-md-flex">
-          <button class="btn btn-primary me-2" @click="setPending">
-            Pending
-          </button>
-
-          <button class="btn btn-success" @click="setAccepted">
-            Accepted
-          </button>
-        </div>
-
+      <div>
+        <button class="btn btn-primary me-2" @click="setPending">Pending</button>
+        <button class="btn btn-success" @click="setApproved">Approved</button>
       </div>
 
     </div>
 
-    <!-- ================= TABLE ================= -->
     <div class="card shadow-sm">
 
-      <table class="table table-hover mb-0">
+      <div class="table-responsive">
 
-        <thead class="table-dark">
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Requirements</th>
-            <th>Countdown</th>
-            <th>Status</th>
-            <th width="180">Action</th>
-          </tr>
-        </thead>
+        <table class="table table-hover mb-0">
 
-        <tbody>
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Employer</th>
+              <th>Company</th>
+              <th>Documents</th>
+              <th>Countdown</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
 
-          <tr v-for="(applicant, index) in filteredApplicants"
-              :key="applicant.id">
+          <tbody>
 
-            <td>{{ index + 1 }}</td>
+            <tr v-for="(employer, index) in filteredEmployers" :key="employer.id">
 
-            <td>{{ applicant.name }}</td>
+              <td>{{ index + 1 }}</td>
+              <td>{{ employer.name }}</td>
+              <td>{{ employer.company }}</td>
 
-            <td>{{ applicant.position }}</td>
+              <td style="min-width:320px">
 
-            <!-- CHECKLIST -->
-            <td>
+                <div class="mb-2">
+                  <label class="form-label small">Business Permit</label>
 
-              <div class="checklist">
+                  <div v-if="employer.documents.business_permit">
+                    <span class="badge bg-success me-2">Uploaded</span>
+                    {{ employer.documents.business_permit.name }}
 
-                <div>
-                  <input type="checkbox" v-model="applicant.requirements.resume">
-                  Resume
+                    <a
+                      :href="employer.documents.business_permit.url"
+                      target="_blank"
+                      class="btn btn-sm btn-outline-primary ms-2"
+                    >View</a>
+
+                    <button
+                      class="btn btn-sm btn-danger ms-2"
+                      @click="removeFile(employer, 'business_permit')"
+                    >Remove</button>
+                  </div>
+
+                  <input
+                    v-else
+                    type="file"
+                    class="form-control form-control-sm"
+                    @change="uploadFile($event, employer, 'business_permit')"
+                  >
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label small">Mayor's Permit</label>
+
+                  <div v-if="employer.documents.mayors_permit">
+                    <span class="badge bg-success me-2">Uploaded</span>
+                    {{ employer.documents.mayors_permit.name }}
+
+                    <a :href="employer.documents.mayors_permit.url" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+
+                    <button class="btn btn-sm btn-danger ms-2" @click="removeFile(employer, 'mayors_permit')">Remove</button>
+                  </div>
+
+                  <input
+                    v-else
+                    type="file"
+                    class="form-control form-control-sm"
+                    @change="uploadFile($event, employer, 'mayors_permit')"
+                  >
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label small">DTI / SEC</label>
+
+                  <div v-if="employer.documents.dti_sec">
+                    <span class="badge bg-success me-2">Uploaded</span>
+                    {{ employer.documents.dti_sec.name }}
+
+                    <a :href="employer.documents.dti_sec.url" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+
+                    <button class="btn btn-sm btn-danger ms-2" @click="removeFile(employer, 'dti_sec')">Remove</button>
+                  </div>
+
+                  <input
+                    v-else
+                    type="file"
+                    class="form-control form-control-sm"
+                    @change="uploadFile($event, employer, 'dti_sec')"
+                  >
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label small">Valid ID</label>
+
+                  <div v-if="employer.documents.valid_id">
+                    <span class="badge bg-success me-2">Uploaded</span>
+                    {{ employer.documents.valid_id.name }}
+
+                    <a :href="employer.documents.valid_id.url" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+
+                    <button class="btn btn-sm btn-danger ms-2" @click="removeFile(employer, 'valid_id')">Remove</button>
+                  </div>
+
+                  <input
+                    v-else
+                    type="file"
+                    class="form-control form-control-sm"
+                    @change="uploadFile($event, employer, 'valid_id')"
+                  >
                 </div>
 
                 <div>
-                  <input type="checkbox" v-model="applicant.requirements.valid_id">
-                  Valid ID
+                  <label class="form-label small">Proof of Billing</label>
+
+                  <div v-if="employer.documents.proof_of_billing">
+                    <span class="badge bg-success me-2">Uploaded</span>
+                    {{ employer.documents.proof_of_billing.name }}
+
+                    <a :href="employer.documents.proof_of_billing.url" target="_blank" class="btn btn-sm btn-outline-primary ms-2">View</a>
+
+                    <button class="btn btn-sm btn-danger ms-2" @click="removeFile(employer, 'proof_of_billing')">Remove</button>
+                  </div>
+
+                  <input
+                    v-else
+                    type="file"
+                    class="form-control form-control-sm"
+                    @change="uploadFile($event, employer, 'proof_of_billing')"
+                  >
                 </div>
 
-                <div>
-                  <input type="checkbox" v-model="applicant.requirements.nbi">
-                  NBI
-                </div>
+              </td>
 
-                <div>
-                  <input type="checkbox" v-model="applicant.requirements.interview">
-                  Interview
-                </div>
-
-              </div>
-
-            </td>
-
-            <!-- LIVE COUNTDOWN -->
-            <td>
-
-              <div v-if="!isExpired(applicant)">
-                <span class="badge bg-warning text-dark">
-                  {{ applicant.remaining }}
+              <td>
+                <span v-if="!isExpired(employer)" class="badge bg-warning text-dark">
+                  {{ employer.remaining }}
                 </span>
-              </div>
+                <span v-else class="badge bg-danger">Expired</span>
+              </td>
 
-              <div v-else>
-                <span class="badge bg-danger">
-                  Expired
-                </span>
-              </div>
+              <td>
+                <span v-if="employer.approved" class="badge bg-success">Approved</span>
+                <span v-else-if="isExpired(employer)" class="badge bg-danger">Expired</span>
+                <span v-else class="badge bg-secondary">Pending</span>
+              </td>
 
-            </td>
+              <td>
+                <button
+                  class="btn btn-success btn-sm"
+                  :disabled="!isComplete(employer) || isExpired(employer) || employer.approved"
+                  @click="approveEmployer(employer)"
+                >
+                  Approve
+                </button>
+              </td>
 
-            <!-- STATUS -->
-            <td>
+            </tr>
 
-              <span class="badge bg-success" v-if="applicant.accepted">
-                Accepted
-              </span>
+          </tbody>
 
-              <span class="badge bg-danger" v-else-if="isExpired(applicant)">
-                Expired
-              </span>
+        </table>
 
-              <span class="badge bg-secondary" v-else>
-                Pending
-              </span>
-
-            </td>
-
-            <!-- ACTION -->
-            <td>
-
-              <button
-                class="btn btn-success btn-sm"
-                :disabled="!isComplete(applicant) || isExpired(applicant) || applicant.accepted"
-                @click="acceptApplicant(applicant)"
-              >
-                Accept
-              </button>
-
-            </td>
-
-          </tr>
-
-        </tbody>
-
-      </table>
+      </div>
 
     </div>
 
@@ -170,80 +216,48 @@ export default {
   data() {
     return {
 
-      showAccepted: false,
+      showApproved: false,
 
-      applicants: [
-
+      employers: [
         {
           id: 1,
-          name: "John Michael",
-          position: "Web Developer",
-
-          accepted: false,
-
-          expires_at: new Date(Date.now() + 3600 * 1000),
-
+          name: "Juan Dela Cruz",
+          company: "ABC Construction",
+          approved: false,
+          expires_at: new Date(Date.now() + 3600000),
           remaining: "",
-
-          requirements: {
-            resume: true,
-            valid_id: true,
-            nbi: false,
-            interview: true
-          }
-        },
-
-        {
-          id: 2,
-          name: "Diane Masmela",
-          position: "UI Designer",
-
-          accepted: false,
-
-          expires_at: new Date(Date.now() + 7200 * 1000),
-
-          remaining: "",
-
-          requirements: {
-            resume: true,
-            valid_id: true,
-            nbi: true,
-            interview: true
+          documents: {
+            business_permit: null,
+            mayors_permit: null,
+            dti_sec: null,
+            valid_id: null,
+            proof_of_billing: null
           }
         }
-
       ]
 
     };
   },
 
   mounted() {
-
     this.updateCountdown();
-
-    setInterval(() => {
-      this.updateCountdown();
-    }, 1000);
-
+    setInterval(this.updateCountdown, 1000);
   },
 
   computed: {
 
-    acceptedCount() {
-      return this.applicants.filter(a => a.accepted).length;
+    approvedCount() {
+      return this.employers.filter(e => e.approved).length;
     },
 
     expiredCount() {
-      return this.applicants.filter(a => this.isExpired(a)).length;
+      return this.employers.filter(e => this.isExpired(e)).length;
     },
 
-    filteredApplicants() {
-
-      if (this.showAccepted) {
-        return this.applicants.filter(a => a.accepted);
-      }
-
-      return this.applicants.filter(a => !a.accepted);
+    filteredEmployers() {
+      return this.showApproved
+        ? this.employers.filter(e => e.approved)
+        : this.employers.filter(e => !e.approved);
     }
 
   },
@@ -251,74 +265,59 @@ export default {
   methods: {
 
     setPending() {
-      this.showAccepted = false;
+      this.showApproved = false;
     },
 
-    setAccepted() {
-      this.showAccepted = true;
+    setApproved() {
+      this.showApproved = true;
     },
 
-    isComplete(applicant) {
+    uploadFile(event, employer, type) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-      return Object.values(applicant.requirements)
-        .every(value => value === true);
-
+      employer.documents[type] = {
+        name: file.name,
+        file,
+        url: URL.createObjectURL(file)
+      };
     },
 
-    isExpired(applicant) {
-
-      return new Date() > new Date(applicant.expires_at);
-
+    removeFile(employer, type) {
+      employer.documents[type] = null;
     },
 
-    acceptApplicant(applicant) {
+    isComplete(employer) {
+      return Object.values(employer.documents).every(f => f !== null);
+    },
 
-      if (!this.isComplete(applicant)) {
-        return alert("Complete all requirements first.");
-      }
+    isExpired(employer) {
+      return new Date() > new Date(employer.expires_at);
+    },
 
-      if (this.isExpired(applicant)) {
-        return alert("Application expired.");
-      }
+    approveEmployer(employer) {
+      if (!this.isComplete(employer)) return alert("Upload all documents first.");
+      if (this.isExpired(employer)) return alert("Expired request.");
 
-      applicant.accepted = true;
-
-      alert("Applicant accepted successfully.");
-
+      employer.approved = true;
+      alert("Employer approved successfully.");
     },
 
     updateCountdown() {
+      this.employers.forEach(e => {
+        const diff = new Date(e.expires_at) - new Date();
 
-      this.applicants.forEach(applicant => {
-
-        const now = new Date().getTime();
-
-        const distance =
-          new Date(applicant.expires_at).getTime() - now;
-
-        if (distance <= 0) {
-
-          applicant.remaining = "Expired";
+        if (diff <= 0) {
+          e.remaining = "Expired";
           return;
         }
 
-        const hours =
-          Math.floor((distance % (1000 * 60 * 60 * 24))
-          / (1000 * 60 * 60));
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
 
-        const minutes =
-          Math.floor((distance % (1000 * 60 * 60))
-          / (1000 * 60));
-
-        const seconds =
-          Math.floor((distance % (1000 * 60))
-          / 1000);
-
-        applicant.remaining =
-          `${hours}h ${minutes}m ${seconds}s`;
-
+        e.remaining = `${h}h ${m}m ${s}s`;
       });
-
     }
 
   }
@@ -327,28 +326,7 @@ export default {
 </script>
 
 <style scoped>
-
-.card {
-  border-radius: 12px;
-}
-
-.table th,
-.table td {
-  vertical-align: middle;
-}
-
-.checklist div {
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-.btn:disabled {
-  cursor: not-allowed;
-}
-
-.badge {
-  font-size: 13px;
-  padding: 7px 10px;
-}
-
+.card { border-radius: 12px; }
+.table td, .table th { vertical-align: middle; }
+.badge { font-size: 13px; padding: 6px 10px; }
 </style>
