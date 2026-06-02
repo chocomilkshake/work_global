@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EmployerDocument;
 
 class Employer extends Model
 {
@@ -37,4 +38,9 @@ class Employer extends Model
     protected $attributes = [
         'status' => 'Pending',
     ];
+
+    public function documents()
+    {
+        return $this->hasOne(EmployerDocument::class, 'employer_id');
+    }
 }

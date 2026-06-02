@@ -175,10 +175,11 @@
               </td>
 
               <td>
-                <span v-if="!isExpired(employer)" class="badge bg-warning text-dark">
+                <span v-if="employer.approved && !isExpired(employer)" class="badge bg-warning text-dark">
                   {{ employer.remaining }}
                 </span>
-                <span v-else class="badge bg-danger">Expired</span>
+                <span v-else-if="isExpired(employer)" class="badge bg-danger">Expired</span>
+                <span v-else class="badge bg-secondary">N/A</span>
               </td>
 
               <td>
@@ -211,6 +212,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
 
   data() {
@@ -218,28 +221,13 @@ export default {
 
       showApproved: false,
 
-      employers: [
-        {
-          id: 1,
-          name: "Juan Dela Cruz",
-          company: "ABC Construction",
-          approved: false,
-          expires_at: new Date(Date.now() + 3600000),
-          remaining: "",
-          documents: {
-            business_permit: null,
-            mayors_permit: null,
-            dti_sec: null,
-            valid_id: null,
-            proof_of_billing: null
-          }
-        }
-      ]
+      employers: []
 
     };
   },
 
-  mounted() {
+  async mounted() {
+    await this.fetchEmployers();
     this.updateCountdown();
     setInterval(this.updateCountdown, 1000);
   },
@@ -270,6 +258,29 @@ export default {
 
     setApproved() {
       this.showApproved = true;
+    },
+
+    async fetchEmployers() {
+      try {
+        const res = await axios.get('/admin/employers');
+        this.employers = res.data.map(employer => ({
+          id: employer.id,
+          name: employer.contact_person || employer.username || employer.company_name || 'Unknown',
+          company: employer.company_name || 'Unknown',
+          approved: String(employer.status).toLowerCase() === 'approved',
+          expires_at: employer.expires_at || new Date(Date.now() + 3600000),
+          remaining: '',
+          documents: {
+            business_permit: null,
+            mayors_permit: null,
+            dti_sec: null,
+            valid_id: null,
+            proof_of_billing: null
+          }
+        }));
+      } catch (error) {
+        console.error('Failed to load employers:', error);
+      }
     },
 
     uploadFile(event, employer, type) {
@@ -305,6 +316,11 @@ export default {
 
     updateCountdown() {
       this.employers.forEach(e => {
+        if (!e.approved) {
+          e.remaining = "";
+          return;
+        }
+
         const diff = new Date(e.expires_at) - new Date();
 
         if (diff <= 0) {

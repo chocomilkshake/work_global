@@ -315,7 +315,7 @@ const validateStep = () => {
     }
 
     if (page.value === 5) {
-        if (!form.business_permit || !form.dti_sec || !form.bir_certificate) {
+        if (!form.business_permit || !form.dti_sec || !form.bir_certificate || !form.municipal_permit || !form.valid_id) {
             errorMessage.value = 'Please upload all required documents'
             return false
         }
