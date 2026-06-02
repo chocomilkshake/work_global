@@ -105,7 +105,7 @@
                         Sign-up as candidate
                     </a>
 
-                    <a href="{{ url('employer_registration') }}"
+                    <a href="{{ url('employer_register') }}"
                         class="btn btn-outline-primary">
                         Sign-up as employer
                     </a>

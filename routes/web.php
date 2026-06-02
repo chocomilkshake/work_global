@@ -35,8 +35,16 @@ Route::get('/login', function () {
     return view('login');
 });
 
+Route::get('/employer_login', function () {
+    return view('employer_login');
+});
+
 Route::get('/register', function () {
     return view('register');
+});
+
+Route::get('/employer_register', function () {
+    return view('employer_register');
 });
 
 Route::get('/admin', function () {
@@ -54,6 +62,10 @@ Route::get('/admin/employer', function () {
 Route::get('/admin/activity-logs', function () {
     return view('admin.activity-logs');
 });
+
+use App\Http\Controllers\EmployerController;
+
+Route::post('/employer/register', [EmployerController::class, 'register']);
 
 /* =========================
    LOGOUT

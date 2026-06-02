@@ -17,6 +17,7 @@
     {{-- Custom CSS --}}
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="@yield('body-class')">
