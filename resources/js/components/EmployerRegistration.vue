@@ -47,11 +47,11 @@
                                 <div v-else class="logo-placeholder">🏢</div>
                             </div>
 
-                            <button class="btn btn-outline-primary btn-sm mb-3" @click="$refs.logoInput.click()">
+                            <button type="button" class="btn btn-outline-primary btn-sm mb-3" @click="triggerLogoInput">
                                 Upload Logo
                             </button>
 
-                            <input ref="logoInput" type="file" accept="image/*" style="display:none" @change="handleLogo" />
+                            <input ref="logoInput" name="company_logo" type="file" accept="image/*" style="display:none" @change="handleLogo" />
 
                             <p class="text-muted small mb-3">Recommended: 300x300 PNG or JPG</p>
 
@@ -140,6 +140,7 @@ const page = ref(1)
 const totalPages = 5
 const errorMessage = ref('')
 const logoPreview = ref(null)
+const logoInput = ref(null)
 
 const allowedDocumentTypes = [
     'image/jpeg',
@@ -220,17 +221,27 @@ const passwordStrengthClass = computed(() => {
 })
 
 /* ================= LOGO ================= */
+const triggerLogoInput = () => {
+    if (!logoInput.value) return
+    // Reset the file input so the same file can be selected again
+    logoInput.value.value = ''
+    logoInput.value.click()
+}
+
 const handleLogo = (e) => {
     const file = e.target.files[0]
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
         errorMessage.value = 'Logo must be an image file'
+        e.target.value = ''
         return
     }
 
     form.company_logo = file
     logoPreview.value = URL.createObjectURL(file)
+    // Reset input after selection to allow re-opening the file dialog for the same file later
+    e.target.value = ''
 }
 
 const handleMobileInput = (e) => {

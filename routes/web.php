@@ -66,6 +66,9 @@ Route::get('/admin/activity-logs', function () {
 use App\Http\Controllers\EmployerController;
 
 Route::get('/admin/employers', [EmployerController::class, 'index']);
+Route::post('/admin/employer/{id}/approve', [EmployerController::class, 'approve']);
+Route::post('/admin/employer/{id}/document/reject', [EmployerController::class, 'rejectDocument']);
+Route::post('/admin/employer/{id}/reject', [EmployerController::class, 'reject']);
 Route::post('/employer/register', [EmployerController::class, 'register']);
 
 /* =========================
