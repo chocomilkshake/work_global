@@ -31,7 +31,7 @@
                         Login to access your account
                     </p>
 
-                    <form method="POST" action="{{ url('/login') }}">
+                    <form method="POST" action="{{ route('employer.login.post') }}">
 
                         @csrf
 
@@ -73,8 +73,8 @@
                     <div class="text-center mt-3">
 
                         <small class="text-muted">
-                            Don't have an account?
-                            <a href="{{ url('register') }}">Register here</a>
+                            Don't have an employer account?
+                            <a href="{{ url('employer_register') }}">Register here</a>
                         </small>
 
                     </div>

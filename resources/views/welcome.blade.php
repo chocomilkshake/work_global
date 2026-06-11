@@ -28,7 +28,7 @@
 
                 <div class="d-flex gap-3 mt-4">
 
-                    <a href="{{ url('login') }}" class="btn btn-primary px-4">
+                    <a href="{{ route('get-started') }}" class="btn btn-primary px-4">
                         Get Started
                     </a>
 

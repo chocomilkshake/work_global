@@ -1,119 +1,75 @@
 @extends('layouts.app')
 
-@section('title', 'Home')
+@section('title', 'Jobs')
 
 @section('content')
 
 <div class="main-wrapper">
 
-    <!-- Your page content here -->
-      {{-- LEFT SIDE --}}
-        <div class="job-list-panel">
+    <div class="job-list-panel">
 
-            <div class="job-list-header">
-                <h3>Available Jobs</h3>
-            </div>
+        <div class="job-list-header">
+            <h3>Available Jobs</h3>
+        </div>
 
-            <div class="job-card active"
-                data-title="Laravel Developer"
-                data-company="CSNK Manpower Agency"
-                data-location="Naic, Cavite"
-                data-description="Develop Laravel systems."
-                data-logo="fa-code">
-
-                <div class="d-flex gap-3">
-
+        @forelse($jobs as $job)
+            <div class="job-card {{ $loop->first ? 'active' : '' }}">
+                <div class="d-flex gap-3 align-items-center">
                     <div class="company-logo">
-                        <i class="fa fa-code"></i>
+                        @php($logo = $job->logoUrl())
+                        @if($logo)
+                            <img src="{{ $logo }}" alt="{{ $job->employer_name ?? 'Company logo' }}">
+                        @else
+                            <span>{{ strtoupper(substr($job->title, 0, 1)) }}</span>
+                        @endif
                     </div>
 
                     <div>
-                        <div class="job-title">
-                            Laravel Developer
-                        </div>
-
-                        <div class="company-name">
-                            CSNK Manpower Agency
-                        </div>
+                        <div class="job-title">{{ $job->title }}</div>
+                        <div class="company-name">{{ $job->employer_name ?: optional($job->employer)->company_name ?: 'Employer' }}</div>
+                        <div class="company-location">{{ $job->country }}</div>
                     </div>
-
                 </div>
-
             </div>
+        @empty
+            <div class="text-center py-5 text-muted">No jobs found in the database yet.</div>
+        @endforelse
 
-            <div class="job-card"
-                data-title="UI/UX Designer"
-                data-company="Zeslife Marketing"
-                data-location="Manila"
-                data-description="Create modern UI design."
-                data-logo="fa-paint-brush">
+    </div>
 
-                <div class="d-flex gap-3">
-
-                    <div class="company-logo bg-success">
-                        <i class="fa fa-paint-brush"></i>
-                    </div>
-
-                    <div>
-                        <div class="job-title">
-                            UI/UX Designer
-                        </div>
-
-                        <div class="company-name">
-                            Zeslife Marketing
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        {{-- RIGHT SIDE --}}
-        <div class="job-detail-panel">
-
+    <div class="job-detail-panel">
+        @if($jobs->isNotEmpty())
+            @php($job = $jobs->first())
             <div class="detail-card">
-
                 <div class="detail-header">
-
                     <div class="detail-left">
-
-                        <div class="detail-logo" id="detailLogo">
-                            <i class="fa fa-code"></i>
+                        <div class="detail-logo">
+                            @php($logo = $job->logoUrl())
+                            @if($logo)
+                                <img src="{{ $logo }}" alt="{{ $job->employer_name ?: optional($job->employer)->company_name ?: 'Company logo' }}">
+                            @else
+                                <span>{{ strtoupper(substr($job->title, 0, 1)) }}</span>
+                            @endif
                         </div>
-
                         <div>
-
-                            <div class="detail-title" id="detailTitle">
-                                Laravel Developer
+                            <div class="detail-title">{{ $job->title }}</div>
+                            <div class="detail-company">
+                                {{ $job->employer_name ?: optional($job->employer)->company_name ?: 'Employer' }} • {{ $job->country }}
                             </div>
-
-                            <div class="detail-company" id="detailCompany">
-                                CSNK Manpower Agency • Naic, Cavite
-                            </div>
-
                         </div>
-
                     </div>
-
-                    <button class="apply-btn">
-                        Apply Now
-                    </button>
-
+                    <button class="apply-btn">Apply Now</button>
                 </div>
 
-                <div class="section-title">
-                    Job Description
-                </div>
-
-                <div class="job-description" id="detailDescription">
-                    Develop Laravel systems.
-                </div>
-
+                <div class="section-title">Job Description</div>
+                <div class="job-description">{{ $job->description }}</div>
             </div>
-
-        </div>
+        @else
+            <div class="detail-card text-center py-5 text-muted">
+                No job details available.
+            </div>
+        @endif
+    </div>
 
 </div>
 

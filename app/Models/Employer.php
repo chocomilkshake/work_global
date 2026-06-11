@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\EmployerDocument;
 
-class Employer extends Model
+class Employer extends Authenticatable
 {
     use HasFactory;
 

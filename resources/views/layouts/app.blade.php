@@ -5,6 +5,9 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
     <title>@yield('title')</title>
 
@@ -35,7 +38,7 @@
 
             <a href="/jobs">Jobs</a>
 
-            <a href="{{ url('login') }}" class="btn btn-outline-primary px-4">
+            <a href="{{ route('get-started') }}" class="btn btn-outline-primary px-4">
                 Get Started
             </a>
 
@@ -127,6 +130,13 @@
     </footer>
 
     {{-- JS --}}
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted || (window.performance && window.performance.getEntriesByType('navigation').pop()?.type === 'back_forward')) {
+                window.location.reload();
+            }
+        });
+    </script>
     <script src="{{ asset('js/jobs.js') }}"></script>
     <script src="{{ asset('js/profile.js') }}"></script>
 
