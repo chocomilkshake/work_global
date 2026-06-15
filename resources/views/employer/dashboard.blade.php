@@ -5,12 +5,39 @@
 
 @section('content')
     <div class="dashboard-overview">
+        @php
+            $employer = Auth::guard('employer')->user();
+            $missingDocs = $employer && $employer->status === 'Pending'
+                ? $employer->missingDocuments()
+                : [];
+        @endphp
+
+        @if ($missingDocs && count($missingDocs))
+            <div class="alert alert-warning mb-4">
+                <h6 class="mb-2">Account Pending</h6>
+                <p class="mb-2">Please upload the following required document(s) to complete your account:</p>
+                <ul class="mb-0">
+                    @foreach ($missingDocs as $doc)
+                        <li>{{ $doc }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @elseif ($employer && $employer->status === 'Pending')
+            <div class="alert alert-info mb-4">
+                Your account is pending administrator approval. All required documents have been submitted.
+            </div>
+        @endif
+
+        @php
+            $jobs = $jobs ?? collect();
+        @endphp
+
         <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="dashboard-card">
                     <div>
                         <h5>Total Job Postings</h5>
-                        <h2>12</h2>
+                        <h2>{{ $jobs->count() }}</h2>
                     </div>
                     <div class="dashboard-icon">
                         <i class="fa-solid fa-briefcase"></i>
@@ -21,7 +48,7 @@
                 <div class="dashboard-card">
                     <div>
                         <h5>Candidates</h5>
-                        <h2>84</h2>
+                        <h2>0</h2>
                     </div>
                     <div class="dashboard-icon">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -32,7 +59,7 @@
                 <div class="dashboard-card">
                     <div>
                         <h5>Encoded Candidates</h5>
-                        <h2>28</h2>
+                        <h2>0</h2>
                     </div>
                     <div class="dashboard-icon">
                         <i class="fa-solid fa-file-import"></i>
@@ -43,7 +70,7 @@
                 <div class="dashboard-card">
                     <div>
                         <h5>Submitted Applications</h5>
-                        <h2>59</h2>
+                        <h2>0</h2>
                     </div>
                     <div class="dashboard-icon">
                         <i class="fa-solid fa-user-check"></i>
@@ -71,24 +98,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Marketing Specialist</td>
-                                    <td><span class="badge bg-success">Open</span></td>
-                                    <td>18</td>
-                                    <td>3 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>Software Developer</td>
-                                    <td><span class="badge bg-warning text-dark">Pending</span></td>
-                                    <td>26</td>
-                                    <td>6 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>Customer Success Lead</td>
-                                    <td><span class="badge bg-success">Open</span></td>
-                                    <td>9</td>
-                                    <td>1 week ago</td>
-                                </tr>
+                                @forelse ($jobs as $job)
+                                    <tr>
+                                        <td>{{ $job->title }}</td>
+                                        <td><span class="badge bg-success">Open</span></td>
+                                        <td>0</td>
+                                        <td>{{ $job->created_at->diffForHumans() }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            No job postings yet. Add a job to start posting.
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -99,26 +122,8 @@
                 <div class="table-section">
                     <h5 class="mb-3">Recent Applications</h5>
                     <div class="list-group">
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>Jorge Williams</strong>
-                                <div class="text-muted">Applied for Marketing Specialist</div>
-                            </div>
-                            <span class="badge bg-primary rounded-pill">New</span>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>Sarah Kim</strong>
-                                <div class="text-muted">Applied for Software Developer</div>
-                            </div>
-                            <span class="badge bg-success rounded-pill">Viewed</span>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>Daniel Reed</strong>
-                                <div class="text-muted">Applied for Customer Success Lead</div>
-                            </div>
-                            <span class="badge bg-warning text-dark rounded-pill">Review</span>
+                        <div class="list-group-item text-center text-muted">
+                            No applications yet.
                         </div>
                     </div>
                 </div>

@@ -21,6 +21,7 @@ class Employer extends Authenticatable
         'barangay',
 
         'contact_person',
+        'owner',
         'mobile_number',
         'email',
 
@@ -29,6 +30,11 @@ class Employer extends Authenticatable
 
         'company_logo',
         'status',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
     ];
 
     protected $hidden = [
@@ -42,5 +48,29 @@ class Employer extends Authenticatable
     public function documents()
     {
         return $this->hasOne(EmployerDocument::class, 'employer_id');
+    }
+
+    public function missingDocuments()
+    {
+        $documents = $this->documents;
+
+        $required = [
+            'business_permit' => 'Business Permit',
+            'dti_sec' => 'DTI/SEC Document',
+            'bir_certificate' => 'BIR Certificate',
+            'municipal_permit' => 'Municipal Permit',
+            'valid_id' => 'Valid ID',
+        ];
+
+        if (! $documents) {
+            return array_values($required);
+        }
+
+        return collect($required)
+            ->filter(function ($label, $field) use ($documents) {
+                return empty($documents->{$field});
+            })
+            ->values()
+            ->all();
     }
 }

@@ -61,13 +61,6 @@
                 </li>
 
                 <li>
-                    <a href="{{ url('/admin/employer') }}">
-                        <i class="fa-solid fa-building"></i>
-                        Employers
-                    </a>
-                </li>
-
-                <li>
                     <a href="{{ url('/admin/activity-logs') }}">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                         Activity Logs

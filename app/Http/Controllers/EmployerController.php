@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Employer;
@@ -163,12 +164,56 @@ class EmployerController extends Controller
     }
 
     /**
+     * Show the current employer account settings form
+     */
+    public function accountSettings()
+    {
+        /** @var Employer|null $employer */
+        $employer = Auth::guard('employer')->user();
+
+        if (! $employer) {
+            return redirect()->route('employer.login');
+        }
+
+        $employer->load('documents');
+
+        return view('employer.account', [
+            'employer' => $employer,
+        ]);
+    }
+
+    /**
+     * Update editable employer account settings
+     */
+    public function updateAccount(Request $request)
+    {
+        /** @var Employer|null $employer */
+        $employer = Auth::guard('employer')->user();
+
+        if (! $employer) {
+            return redirect()->route('employer.login');
+        }
+
+        $request->validate([
+            'owner' => 'nullable|string|max:255',
+            'contact_person' => 'required|string|max:255',
+        ]);
+
+        $employer->owner = $request->owner;
+        $employer->contact_person = $request->contact_person;
+        $employer->save();
+
+        return redirect()->route('employer.account')->with('status', 'Account settings updated successfully.');
+    }
+
+    /**
      * Approve an employer registration
      */
     public function approve($id)
     {
         $employer = Employer::findOrFail($id);
         $employer->status = 'Approved';
+        $employer->expires_at = now()->addYear();
         $employer->save();
 
         return response()->json(['message' => 'Employer approved successfully']);

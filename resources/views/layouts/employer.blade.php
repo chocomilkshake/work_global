@@ -24,6 +24,12 @@
 
 <body>
 
+    @php
+        $employer = Auth::guard('employer')->user();
+        $employerPending = $employer && $employer->status === 'Pending';
+        $disabledClass = $employerPending ? 'disabled text-muted' : '';
+    @endphp
+
     <div class="admin-wrapper">
 
         {{-- Sidebar --}}
@@ -36,37 +42,53 @@
             <ul class="sidebar-menu">
 
                 <li>
-                    <a href="{{ route('employer.dashboard') }}  ">
+                    <a href="{{ route('employer.dashboard') }}">
                         <i class="fa-solid fa-house"></i>
                         Dashboard
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('employer.job') }}">
+                    <a href="{{ $employerPending ? 'javascript:void(0);' : route('employer.job') }}"
+                        class="{{ $employerPending ? 'disabled text-muted' : '' }}"
+                        {{ $employerPending ? 'aria-disabled=true tabindex=-1' : '' }}>
                         <i class="fa-solid fa-briefcase"></i>
                         Job Postings
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="#"
+                        class="{{ $employerPending ? 'disabled text-muted' : '' }}"
+                        {{ $employerPending ? 'aria-disabled=true tabindex=-1' : '' }}>
                         <i class="fa-solid fa-magnifying-glass"></i>
                         Candidates
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="#"
+                        class="{{ $employerPending ? 'disabled text-muted' : '' }}"
+                        {{ $employerPending ? 'aria-disabled=true tabindex=-1' : '' }}>
                         <i class="fa-solid fa-file-import"></i>
                         Encoded Candidates
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="#"
+                        class="{{ $employerPending ? 'disabled text-muted' : '' }}"
+                        {{ $employerPending ? 'aria-disabled=true tabindex=-1' : '' }}>
                         <i class="fa-solid fa-user-check"></i>
                         Submitted Applications
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('employer.account') }}"
+                        class="{{ $employerPending ? '' : '' }}">
+                        <i class="fa-solid fa-gear"></i>
+                        Account Settings
                     </a>
                 </li>
 
@@ -87,10 +109,16 @@
                     <h4 class="mb-0">@yield('page-title')</h4>
                 </div>
 
-                <div class="admin-profile d-flex align-items-center gap-3">
-                    <div class="profile-identity d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-user"></i>
-                        <span>{{ Auth::guard('employer')->user()->name ?? 'Employer' }}</span>
+@php
+        $employer = Auth::guard('employer')->user();
+        $employerPending = $employer && $employer->status === 'Pending';
+        $disabledClass = $employerPending ? 'disabled text-muted' : '';
+    @endphp
+
+    <div class="admin-profile d-flex align-items-center gap-3">
+        <div class="profile-identity d-flex align-items-center gap-2">
+            <i class="fa-solid fa-user"></i>
+            <span>{{ $employer->name ?? 'Employer' }}</span>
                     </div>
 
                     {{-- Logout --}}

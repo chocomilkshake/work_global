@@ -94,7 +94,7 @@
               </td>
 
               <td>
-                <span v-if="employer.approved && !isExpired(employer)" class="badge bg-warning text-dark">
+                <span v-if="employer.approved && hasValidExpiration(employer) && !isExpired(employer)" class="badge bg-warning text-dark">
                   {{ employer.remaining }}
                 </span>
                 <span v-else-if="isExpired(employer)" class="badge bg-danger">Expired</span>
@@ -264,7 +264,7 @@ export default {
           company: employer.company_name || 'Unknown',
           company_logo: employer.company_logo || null,
           approved: String(employer.status).toLowerCase() === 'approved',
-          expires_at: employer.expires_at || new Date(Date.now() + 3600000),
+          expires_at: employer.expires_at || null,
           remaining: '',
           documents: {
             business_permit: employer.documents?.business_permit || null,
@@ -290,7 +290,15 @@ export default {
       ].every(f => f !== null);
     },
 
+    hasValidExpiration(employer) {
+      return employer.expires_at && !isNaN(new Date(employer.expires_at).getTime());
+    },
+
     isExpired(employer) {
+      if (!this.hasValidExpiration(employer)) {
+        return false;
+      }
+
       return new Date() > new Date(employer.expires_at);
     },
 

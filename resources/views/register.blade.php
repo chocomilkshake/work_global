@@ -38,8 +38,8 @@
 
 
 
-                    <form>
-
+                    <form form action="{{ route('applicant.store') }}" method="POST" enctype="multipart/form-data">     
+                        @csrf
                         {{-- ================= PROFILE CARD ================= --}}
                         <div class="profile-card">
 
@@ -63,7 +63,7 @@
 
                                     <input type="file"
                                         id="profileImageInput"
-                                        name="image"
+                                        name="profile_image"
                                         accept="image/*"
                                         hidden>
 
@@ -89,17 +89,17 @@
 
                             <div class="col-md-4">
                                 <label class="form-label">First Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" placeholder="Juan" required>
+                                <input type="text" name="first_name" class="form-control" placeholder="Juan" required>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Middle Name</label>
-                                <input type="text" class="form-control" placeholder="Santos">
+                                <input type="text"  name="middle_name" class="form-control" placeholder="Santos">
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Last Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" placeholder="Dela Cruz" required>
+                                <input type="text"  name="last_name" class="form-control" placeholder="Dela Cruz" required>
                             </div>
 
                         </div>
@@ -113,29 +113,29 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Street No.<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" placeholder="123" required>
+                                <input type="text" name="street_no" class="form-control" placeholder="123" required>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Full Address<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" placeholder="Blk 5 Lot 10..." required>
+                                <input type="text" name="full_address" class="form-control" placeholder="Blk 5 Lot 10..." required>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Region</label>
-                                <select class="form-select">
+                                <select class="form-select" name="region">
                                     <option>Select Region</option>
                                 </select>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">City</label>
-                                <input type="text" class="form-control" placeholder="City">
+                                <input type="text" name="city" class="form-control" placeholder="City">
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Barangay</label>
-                                <input type="text" class="form-control" placeholder="Barangay">
+                                <input type="text" name="barangay" class="form-control" placeholder="Barangay">
                             </div>
 
                         </div>
@@ -149,12 +149,12 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Contact Number</label>
-                                <input type="text" class="form-control" placeholder="09XXXXXXXXX">
+                                <input type="text" name="contact_number" class="form-control" placeholder="09XXXXXXXXX">
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Email (optional)</label>
-                                <input type="email" class="form-control" placeholder="email@gmail.com">
+                                <input type="email" name="email" class="form-control" placeholder="email@gmail.com">
                             </div>
 
                         </div>
@@ -166,12 +166,12 @@
 
                         <div class="mb-3">
                             <label class="form-label">Upload Resume (optional)</label>
-                            <input type="file" class="form-control">
+                            <input type="file" name="resume" class="form-control">
                             <small class="text-muted">PDF, DOC, DOCX only</small>
                         </div>
 
                         {{-- ================= BUTTON ================= --}}
-                        <button type="button" class="btn btn-primary w-100 py-2 mt-3">
+                        <button type="submit" class="btn btn-primary w-100 py-2 mt-3">
                             Create Account
                         </button>
 

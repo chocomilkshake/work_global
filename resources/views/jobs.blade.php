@@ -10,13 +10,19 @@
 
         <div class="job-list-header">
             <h3>Available Jobs</h3>
+            <input id="jobSearchInput" class="job-search-input form-control mt-3" type="search" placeholder="Search jobs by title, company, or location">
         </div>
 
         @forelse($jobs as $job)
-            <div class="job-card {{ $loop->first ? 'active' : '' }}">
+            @php($logo = $job->logoUrl())
+            <div class="job-card {{ $loop->first ? 'active' : '' }}"
+                 data-title="{{ strtolower($job->title) }}"
+                 data-company="{{ strtolower($job->employer_name ?: optional($job->employer)->company_name ?: 'Employer') }}"
+                 data-location="{{ strtolower($job->country) }}"
+                 data-description="{{ strtolower($job->description) }}"
+                 data-image="{{ $logo ?: '' }}">
                 <div class="d-flex gap-3 align-items-center">
                     <div class="company-logo">
-                        @php($logo = $job->logoUrl())
                         @if($logo)
                             <img src="{{ $logo }}" alt="{{ $job->employer_name ?? 'Company logo' }}">
                         @else
@@ -43,8 +49,7 @@
             <div class="detail-card">
                 <div class="detail-header">
                     <div class="detail-left">
-                        <div class="detail-logo">
-                            @php($logo = $job->logoUrl())
+                        <div class="detail-logo" id="detailLogo">
                             @if($logo)
                                 <img src="{{ $logo }}" alt="{{ $job->employer_name ?: optional($job->employer)->company_name ?: 'Company logo' }}">
                             @else
@@ -52,8 +57,8 @@
                             @endif
                         </div>
                         <div>
-                            <div class="detail-title">{{ $job->title }}</div>
-                            <div class="detail-company">
+                            <div class="detail-title" id="detailTitle">{{ $job->title }}</div>
+                            <div class="detail-company" id="detailCompany">
                                 {{ $job->employer_name ?: optional($job->employer)->company_name ?: 'Employer' }} • {{ $job->country }}
                             </div>
                         </div>
@@ -62,7 +67,7 @@
                 </div>
 
                 <div class="section-title">Job Description</div>
-                <div class="job-description">{{ $job->description }}</div>
+                <div class="job-description" id="detailDescription">{{ $job->description }}</div>
             </div>
         @else
             <div class="detail-card text-center py-5 text-muted">
