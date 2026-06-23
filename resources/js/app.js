@@ -16,3 +16,7 @@ createApp(EmployerList).mount('#employer')
 import EmployerRegistration from './components/EmployerRegistration.vue'
 
 createApp(EmployerRegistration).mount('#employerRegistration')
+
+import ApplicantRegistration from './components/ApplicantRegistration.vue'
+
+createApp(ApplicantRegistration).mount('#applicantRegistration')

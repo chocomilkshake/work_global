@@ -8,6 +8,7 @@ use App\Http\Controllers\UserAccountController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\EmployerAuthController;
+use App\Http\Controllers\ApplicantController;
 
 /* =========================
    USER ACCOUNT ROUTES
@@ -138,6 +139,8 @@ Route::get('/admin/activity-logs', function () {
     return view('admin.activity-logs');
 });
 
+
+Route::post('/applicant/store', [ApplicantController::class, 'store']);
 Route::get('/admin/employers', [EmployerController::class, 'index']);
 Route::post('/admin/employer/{id}/approve', [EmployerController::class, 'approve']);
 Route::post('/admin/employer/{id}/document/reject', [EmployerController::class, 'rejectDocument']);
